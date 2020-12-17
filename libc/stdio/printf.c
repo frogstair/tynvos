@@ -61,6 +61,39 @@ int printf(const char* restrict format, ...) {
 			if (!print(str, len))
 				return -1;
 			written += len;
+		} else if(*format == 'd') {
+			format++;
+			int num = va_arg(parameters, int);
+			char buffer[256];
+			bool negative = num < 0 ? true : false;
+			if (negative) num *= -1;
+
+			if(num == 0) {
+				buffer[0] = (char)'0';
+				if(!print((const char*)buffer, 1))
+					return -1;
+				written += 1;
+			} else {
+				size_t i = 0;
+				while(num) {
+					int rem = num %10;
+					num -= rem;
+					num /= 10;
+					buffer[i] = (char)(rem + '0');
+					i++;
+				}
+				
+				if(negative) {
+					buffer[i] = (char)'-';
+					i++;
+				}
+				
+				strrev(buffer);
+
+				if(!print((const char*)buffer, 16))
+					return -1;
+				written += i;
+			}
 		} else {
 			format = format_begun_at;
 			size_t len = strlen(format);

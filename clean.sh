@@ -8,4 +8,7 @@ done
 
 rm -rf sysroot
 rm -rf isodir
-rm -rf tynvos.iso
+if [ "$1" = "" ]
+  then
+    rm -rf tynvos.iso
+fi
