@@ -8,7 +8,7 @@ void print_logo();
 void kernel_main(void) {
 	terminal_initialize();
 	print_logo();
-	puts("Welcome to tynvos");
+	puts("Welcome to tynvos (v 0.0.0.1)");
 	puts("Kernel terminal initialized");
 	puts("Made by frogstair");
 }

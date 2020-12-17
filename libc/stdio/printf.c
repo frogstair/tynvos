@@ -64,16 +64,16 @@ int printf(const char* restrict format, ...) {
 		} else if(*format == 'd') {
 			format++;
 			int num = va_arg(parameters, int);
-			char buffer[256];
-			bool negative = num < 0 ? true : false;
-			if (negative) num *= -1;
-
 			if(num == 0) {
-				buffer[0] = (char)'0';
+				char buffer[1];
+				buffer[0] =(char)'0';
 				if(!print((const char*)buffer, 1))
 					return -1;
 				written += 1;
 			} else {
+				char buffer[256];
+				bool negative = num < 0 ? true : false;
+				if (negative) num *= -1;
 				size_t i = 0;
 				while(num) {
 					int rem = num %10;
@@ -90,9 +90,38 @@ int printf(const char* restrict format, ...) {
 				
 				strrev(buffer);
 
-				if(!print((const char*)buffer, 16))
+				if(!print((const char*)buffer, i))
 					return -1;
 				written += i;
+			}
+		} else if(*format == 'x') {
+			format++;
+			int num = va_arg(parameters, int);
+			if(num < -1) return -1;
+
+			if(num == 0) {
+				char buffer[1];
+				buffer[0] =(char)'0';
+				if(!print((const char*)buffer, 1))
+					return -1;
+				written += 1;
+			} else {
+				char buffer[256];
+				size_t i = 0;
+				while(num) {
+					int rem = num % 16;
+					if (rem < 10)
+						buffer[i] = (char)('0' + rem);
+					else
+						buffer[i] = (char)('7' + rem);
+					num /= 16;
+					i++;
+				}
+				
+				strrev(buffer);
+				if(!print((const char*)buffer, i))
+					return -1;
+				written += 1;
 			}
 		} else {
 			format = format_begun_at;
