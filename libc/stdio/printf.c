@@ -1,5 +1,6 @@
 #include <limits.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -69,6 +70,10 @@ int printf(const char* restrict format, ...) {
 				buffer[0] =(char)'0';
 				if(!print((const char*)buffer, 1))
 					return -1;
+
+				if(maxrem < 1)
+					return -1;
+
 				written += 1;
 			} else {
 				char buffer[256];
@@ -90,6 +95,9 @@ int printf(const char* restrict format, ...) {
 				
 				strrev(buffer);
 
+				if(maxrem < i)
+					return -1;
+
 				if(!print((const char*)buffer, i))
 					return -1;
 				written += i;
@@ -104,6 +112,10 @@ int printf(const char* restrict format, ...) {
 				buffer[0] =(char)'0';
 				if(!print((const char*)buffer, 1))
 					return -1;
+				
+				if(maxrem < 1)
+					return -1;
+
 				written += 1;
 			} else {
 				char buffer[256];
@@ -118,11 +130,18 @@ int printf(const char* restrict format, ...) {
 					i++;
 				}
 				
+				if(maxrem < i)
+					return -1;
+
 				strrev(buffer);
 				if(!print((const char*)buffer, i))
 					return -1;
 				written += 1;
 			}
+		} else if(*format == 'C') {
+			format++;
+			int num = va_arg(parameters, int);
+			color((uint8_t)num);
 		} else {
 			format = format_begun_at;
 			size_t len = strlen(format);

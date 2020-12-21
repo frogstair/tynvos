@@ -29,7 +29,10 @@ _start:
 	# Call the global constructors.
 	call _init
 
-	# Transfer control to the main kernel.
+	# Transfer control to the main kernel preamble.
+	call kernel_early
+
+	# Call kernel
 	call kernel_main
 
 	# Hang if kernel_main unexpectedly returns.

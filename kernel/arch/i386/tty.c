@@ -27,9 +27,15 @@ void terminal_initialize(void) {
 			terminal_buffer[index] = vga_entry(' ', terminal_color);
 		}
 	}
+	terminal_writestring("Kernel terminal initialized\n");
 }
 
 void terminal_setcolor(uint8_t color) {
+	terminal_color = color;
+}
+
+void terminal_setcolors(uint8_t fg, uint8_t bg) {
+	uint8_t color = vga_entry_color(fg, bg);
 	terminal_color = color;
 }
 
