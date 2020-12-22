@@ -14,4 +14,6 @@ menuentry "tynvos" {
 EOF
 grub-mkrescue -o tynvos.iso isodir
 
-. ./clean.sh 1
+objcopy -O binary isodir/boot/tynvos.kernel kernel.bin
+
+. ./clean.sh

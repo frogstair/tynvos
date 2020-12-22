@@ -6,9 +6,6 @@ for PROJECT in $PROJECTS; do
   (cd $PROJECT && $MAKE clean)
 done
 
-rm -rf sysroot
-rm -rf isodir
-if [ "$1" = "" ]
-  then
-    rm -rf tynvos.iso
-fi
+# rm -rf sysroot
+# rm -rf isodir
+# rm -rf tynvos.iso
