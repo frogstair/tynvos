@@ -7,14 +7,31 @@
 #include <stdint.h>
 #include <string.h>
 
-void putpixel(int, int, char);
-size_t screen_buffer_location(int, int);
+int screen_buffer_location(int, int);
 
-static const size_t SCREEN_WIDTH = 720;
-static const size_t SCREEN_HEIGHT = 480;
-static const size_t SCREEN_DEPTH = 32;
-static uint16_t* PIXEL_BUFFER = (uint16_t*) 0xFC000000;
-static uint16_t* MULTIBOOT_INFO_BLOCK = (uint16_t*) 0x0;
+size_t SCREEN_WIDTH, SCREEN_HEIGHT;
+
+static uint64_t* MULTIBOOT_INFO_BLOCK = (uint64_t*) 0x0;
+static uint8_t* PIXEL_BUFFER = (uint8_t*) 0x0;
+
+struct color_info {
+    uint8_t red_field;
+    uint8_t red_mask;
+    uint8_t green_field;
+    uint8_t green_mask;
+    uint8_t blue_field;
+    uint8_t blue_mask;
+};
+
+struct framebuffer {
+    uint64_t ADDR;
+    uint32_t PITCH;
+    uint32_t WIDTH;
+    uint32_t HEIGHT;
+    uint8_t  BPP;
+    uint8_t  TYPE;
+    struct color_info COLORS;
+}* FRAME_BUFFER ;
 
 int screen_initialize() {
 
@@ -26,18 +43,20 @@ int screen_initialize() {
         return 1;
     }
 
-    
+    FRAME_BUFFER = (struct framebuffer*)(MULTIBOOT_INFO_BLOCK + 11);
+    PIXEL_BUFFER = (uint32_t*)FRAME_BUFFER->ADDR;
+
+    SCREEN_WIDTH = FRAME_BUFFER->WIDTH;
+    SCREEN_HEIGHT = FRAME_BUFFER->HEIGHT;
 
     return 0;
 }
 
-void putpixel(int x, int y, char color) {
-    PIXEL_BUFFER[screen_buffer_location(x, y)] = color;
+void putpixel(int x, int y, uint32_t color) {
+    uint32_t* pixel = (uint32_t*)(PIXEL_BUFFER + screen_buffer_location(x, y));
+    *pixel = color;
 }
 
-size_t screen_buffer_location(int x, int y) {
-    int pitch = SCREEN_WIDTH * SCREEN_DEPTH;
-    int width = SCREEN_DEPTH;
-    //return (size_t)(y * pitch + x * width);
-    return (size_t)(y * SCREEN_WIDTH + x);
+int screen_buffer_location(int x, int y) {
+    return y * FRAME_BUFFER->PITCH + x * (FRAME_BUFFER->BPP/8);
 }
