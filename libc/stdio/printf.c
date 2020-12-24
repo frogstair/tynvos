@@ -141,7 +141,7 @@ int printf(const char* restrict format, ...) {
 		} else if(*format == 'C') {
 			format++;
 			int num = va_arg(parameters, int);
-			color((uint8_t)num);
+			color(num);
 		} else {
 			format = format_begun_at;
 			size_t len = strlen(format);

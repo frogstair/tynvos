@@ -14,7 +14,7 @@
 .long CHECKSUM
 .long 0, 0, 0, 0, 0
 .long 0
-.long 640, 480, 32
+.long 1920, 1080, 32
 
 # Reserve a stack for the initial thread.
 .section .bss
