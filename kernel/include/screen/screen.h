@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-int screen_initialize(void);
+void screen_initialize(void);
 void screen_putchar(char c);
 void screen_write(const char* data, size_t size);
 void screen_writestring(const char* data);

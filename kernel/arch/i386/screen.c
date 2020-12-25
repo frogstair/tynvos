@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <kernel/mutiboot.h>
+
 #include <screen/screen.h>
 #include <screen/tyn.h>
 
@@ -30,7 +32,8 @@ uint32_t screen_color = 0xffffff;
 
 size_t SCREEN_WIDTH, SCREEN_HEIGHT;
 
-static uint64_t* MULTIBOOT_INFO_BLOCK = (uint64_t*) 0x0;
+size_t PIXEL_BUFFER_LENGTH;
+
 static uint8_t* PIXEL_BUFFER = (uint8_t*) 0x0;
 
 struct color_info {
@@ -52,22 +55,18 @@ struct framebuffer {
     struct color_info COLORS;
 }* FRAME_BUFFER;
 
-int screen_initialize() {
-    asm("mov %%ebx, %0"
-        : "=a"(MULTIBOOT_INFO_BLOCK));
-
-    FRAME_BUFFER = (struct framebuffer*)(MULTIBOOT_INFO_BLOCK + 11);
+void screen_initialize() {
+    FRAME_BUFFER = (struct framebuffer*)(MULTIBOOT_INFO_ADDRESS + 88);
     PIXEL_BUFFER = (uint32_t*)FRAME_BUFFER->ADDR;
 
     SCREEN_WIDTH = FRAME_BUFFER->WIDTH;
     SCREEN_HEIGHT = FRAME_BUFFER->HEIGHT;
+    PIXEL_BUFFER_LENGTH = SCREEN_HEIGHT * SCREEN_WIDTH * FRAME_BUFFER->BPP/8;
 
     char_width = CHAR_WIDTH * screen_font_scale;
     char_height = CHAR_HEIGHT * screen_font_scale;
     line_space = LINE_SPACE * screen_font_scale;
     letter_space = LETTER_SPACE * screen_font_scale;
-
-    return 0;
 }
 
 void screen_putpixel(int x, int y, uint32_t color) {

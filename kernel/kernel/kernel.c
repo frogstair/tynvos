@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <kernel/mutiboot.h>
+#include <kernel/memory.h>
 #include <screen/screen.h>
 #include <screen/logo/logo.h>
 
@@ -9,7 +11,7 @@
 
 void wait() {
 	for(int i = 0; i < 100000; i++) {
-		((void)0);
+		(void)0;
 	}
 }
 
@@ -20,14 +22,21 @@ void print_logo();
 static int protected = 0;
 
 void kernel_early() {
+	multiboot_initialize();
+	memory_initialize();
 	screen_initialize();
+
 	asm("mov %%cr0, %0\n\t"
 		:"=a"(protected));
 		
 	protected &= 1;
-	int color = protected ? 0x00ff00 : 0xff0000;
+	int color = protected ? 0x5bc232 : 0xc23232;
 	char* prot = protected ? "on" : "off";
-	printf("Protected mode: %C%s%C\n\n", color, prot, 0xffffff);
+	printf("Protected mode: %C%s%C\n", color, prot, 0xffffff);
+
+	printf("Detected resolution: %dx%d\n\n", SCREEN_WIDTH, SCREEN_HEIGHT);
+	printf("Detected memory: %uMB\n", (uint32_t)(memory_getsize()/1000000));
+	puts("=========== KERNEL INITIALIZED ===========\n");
 }
 
 void kernel_main() {

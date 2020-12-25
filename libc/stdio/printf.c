@@ -102,10 +102,42 @@ int printf(const char* restrict format, ...) {
 					return -1;
 				written += i;
 			}
+		} else if(*format == 'u') {
+			format++;
+			uint32_t num = va_arg(parameters, uint32_t);
+			if(num == 0) {
+				char buffer[1];
+				buffer[0] =(char)'0';
+				if(!print((const char*)buffer, 1))
+					return -1;
+
+				if(maxrem < 1)
+					return -1;
+
+				written += 1;
+			} else {
+				char buffer[256];
+				size_t i = 0;
+				while(num) {
+					int rem = num %10;
+					num -= rem;
+					num /= 10;
+					buffer[i] = (char)(rem + '0');
+					i++;
+				}
+				
+				strrev(buffer);
+
+				if(maxrem < i)
+					return -1;
+
+				if(!print((const char*)buffer, i))
+					return -1;
+				written += i;
+			}
 		} else if(*format == 'x') {
 			format++;
-			int num = va_arg(parameters, int);
-			if(num < -1) return -1;
+			uint32_t num = va_arg(parameters, uint32_t);
 
 			if(num == 0) {
 				char buffer[1];
