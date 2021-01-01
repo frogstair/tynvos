@@ -9,6 +9,7 @@ mkdir -p isodir/boot/grub
 cp sysroot/boot/tynvos.kernel isodir/boot/tynvos.kernel
 cat > isodir/boot/grub/grub.cfg << EOF
 menuentry "tynvos" {
+	insmod all_video
 	multiboot /boot/tynvos.kernel
 }
 EOF

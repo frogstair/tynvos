@@ -2,7 +2,7 @@ DEFAULT_HOST!=../default-host.sh
 HOST?=DEFAULT_HOST
 HOSTARCH!=../target-triplet-to-arch.sh $(HOST)
 
-CFLAGS?=-O2 -g
+CFLAGS?=-O3 -g
 CPPFLAGS?=
 LDFLAGS?=
 LIBS?=
@@ -40,6 +40,7 @@ string/memmove.o \
 string/memset.o \
 string/strlen.o \
 string/strrev.o \
+string/bzero.o \
 
 HOSTEDOBJS=\
 $(ARCH_HOSTEDOBJS) \

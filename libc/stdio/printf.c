@@ -75,6 +75,7 @@ int printf(const char* restrict format, ...) {
 					return -1;
 
 				written += 1;
+				bzero(&buffer, 1);
 			} else {
 				char buffer[256];
 				bool negative = num < 0 ? true : false;
@@ -101,6 +102,7 @@ int printf(const char* restrict format, ...) {
 				if(!print((const char*)buffer, i))
 					return -1;
 				written += i;
+				bzero(&buffer, 256);
 			}
 		} else if(*format == 'u') {
 			format++;
@@ -115,6 +117,7 @@ int printf(const char* restrict format, ...) {
 					return -1;
 
 				written += 1;
+				bzero(&buffer, 1);
 			} else {
 				char buffer[256];
 				size_t i = 0;
@@ -134,6 +137,7 @@ int printf(const char* restrict format, ...) {
 				if(!print((const char*)buffer, i))
 					return -1;
 				written += i;
+				bzero(&buffer, 256);
 			}
 		} else if(*format == 'x') {
 			format++;
@@ -149,6 +153,7 @@ int printf(const char* restrict format, ...) {
 					return -1;
 
 				written += 1;
+				bzero(&buffer, 1);
 			} else {
 				char buffer[256];
 				size_t i = 0;
@@ -169,6 +174,7 @@ int printf(const char* restrict format, ...) {
 				if(!print((const char*)buffer, i))
 					return -1;
 				written += 1;
+				bzero(&buffer, 256);
 			}
 		} else if(*format == 'C') {
 			format++;

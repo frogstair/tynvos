@@ -152,19 +152,34 @@ void screen_setcolor(uint32_t color) {
     screen_color = color;
 }
 
+int screen_snaptorow(int y) {
+    int offset = y % (CHAR_HEIGHT + LINE_SPACE);
+    return y + (CHAR_HEIGHT + LINE_SPACE - offset);
+}
+
+int screen_snaptocolumn(int x) {
+    int offset = x % (CHAR_WIDTH + LETTER_SPACE);
+    return x + (CHAR_WIDTH + LETTER_SPACE - offset);
+}
+
 void screen_drawbmp(uint32_t* buffer, size_t width, size_t height, int scale) {
     screen_advancerow();
-    for(size_t y = 0; y < width; y++) {
+    int xp = screen_column;
+    int yp = screen_row;
+    for(size_t y = 0; y < height; y++) {
         for(int ys = 0; ys < scale; ys++) {
-            for(size_t x = 0; x < height; x++) {
+            for(size_t x = 0; x < width; x++) {
                 for(int xs = 0; xs < scale; xs++) {
                     int location = x + y * width;
-                    screen_putpixel(screen_column, screen_row, buffer[location]);
-                    screen_column++;
+                    screen_putpixel(xp, yp, buffer[location]);
+                    xp++;
                 }
             }
-            screen_column = SCREEN_MARGIN_H;
-            screen_advancerow();
+            xp = SCREEN_MARGIN_H;
+            yp++;
         }
     }
+
+    screen_row = screen_snaptorow(yp);
+    screen_column = screen_snaptocolumn(xp);
 }

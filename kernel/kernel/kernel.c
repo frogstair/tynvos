@@ -35,8 +35,10 @@ void kernel_early() {
 	printf("Protected mode: %C%s%C\n", color, prot, 0xffffff);
 
 	printf("Detected resolution: %dx%d\n\n", SCREEN_WIDTH, SCREEN_HEIGHT);
-	printf("Detected memory: %uMB\n", (uint32_t)(memory_getsize()/1000000));
-	puts("=========== KERNEL INITIALIZED ===========\n");
+
+	int memorysize = (memory_getsize() - memory_getsize()%1000000) /1000000;
+	printf("Detected memory: %uGB\n", (uint32_t)memorysize);
+	puts("\n=========== KERNEL INITIALIZED ===========\n");
 }
 
 void kernel_main() {
