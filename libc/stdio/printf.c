@@ -178,7 +178,7 @@ int printf(const char* restrict format, ...) {
 			}
 		} else if(*format == 'C') {
 			format++;
-			int num = va_arg(parameters, int);
+			uint64_t num = va_arg(parameters, uint64_t);
 			color(num);
 		} else {
 			format = format_begun_at;

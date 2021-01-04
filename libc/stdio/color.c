@@ -4,7 +4,7 @@
 #include <kernel/screen.h>
 #endif
 
-void color(uint32_t color) {
+void color(uint64_t color) {
 	#if defined(__is_libk)
 		screen_setcolor(color);
 	#else

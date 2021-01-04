@@ -3,10 +3,13 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <math.h>
+
 #include <kernel/mutiboot.h>
 
 #include <screen/screen.h>
 #include <screen/tyn.h>
+#include <screen/color.h>
 
 int screen_buffer_location(int, int);
 
@@ -28,7 +31,7 @@ const char SCREEN_MARGIN_H = 10;
 size_t screen_row = SCREEN_MARGIN_V;
 size_t screen_column = SCREEN_MARGIN_H;
 
-uint32_t screen_color = 0xffffff;
+uint64_t screen_color = 0xffffffff;
 
 size_t SCREEN_WIDTH, SCREEN_HEIGHT;
 
@@ -63,22 +66,31 @@ void screen_initialize() {
     SCREEN_HEIGHT = FRAME_BUFFER->HEIGHT;
     PIXEL_BUFFER_LENGTH = SCREEN_HEIGHT * SCREEN_WIDTH * FRAME_BUFFER->BPP/8;
 
+    memset(PIXEL_BUFFER, 0x000000, PIXEL_BUFFER_LENGTH);
+
     char_width = CHAR_WIDTH * screen_font_scale;
     char_height = CHAR_HEIGHT * screen_font_scale;
     line_space = LINE_SPACE * screen_font_scale;
     letter_space = LETTER_SPACE * screen_font_scale;
 }
 
-void screen_putpixel(int x, int y, uint32_t color) {
+void screen_putpixel(int x, int y, uint64_t colora) {
     uint32_t* pixel = (uint32_t*)(PIXEL_BUFFER + screen_buffer_location(x, y));
-    *pixel = color;
+
+    uint8_t transparency = (colora & 0xff000000) >> 24;
+    if(transparency == 255)
+        *pixel = (uint32_t)colora;
+    else {
+        uint32_t color = color_rgbatorgb(*pixel, colora);
+        *pixel = color;
+    }
 }
 
 int screen_buffer_location(int x, int y) {
     return y * FRAME_BUFFER->PITCH + x * (FRAME_BUFFER->BPP/8);
 }
 
-void screen_putentryat(unsigned char c, uint32_t color, int xpos, int ypos) {
+void screen_putentryat(unsigned char c, uint64_t color, int xpos, int ypos) {
     if(c < 128) {
         char* letter = tyn_ascii[c];
         for(int ychar = 0; ychar < char_height/screen_font_scale; ychar++) {
@@ -148,7 +160,7 @@ void screen_writestring(const char* data) {
     screen_write(data, strlen(data));
 }
 
-void screen_setcolor(uint32_t color) {
+void screen_setcolor(uint64_t color) {
     screen_color = color;
 }
 
@@ -162,7 +174,7 @@ int screen_snaptocolumn(int x) {
     return x + (CHAR_WIDTH + LETTER_SPACE - offset);
 }
 
-void screen_drawbmp(uint32_t* buffer, size_t width, size_t height, int scale) {
+void screen_drawbmp(uint64_t* buffer, size_t width, size_t height, int scale, bool skip) {
     screen_advancerow();
     int xp = screen_column;
     int yp = screen_row;
@@ -179,7 +191,69 @@ void screen_drawbmp(uint32_t* buffer, size_t width, size_t height, int scale) {
             yp++;
         }
     }
+    if(skip) {
+        screen_row = screen_snaptorow(yp);
+        screen_column = screen_snaptocolumn(xp);
+        screen_advancecharrow();
+    }
+}
 
-    screen_row = screen_snaptorow(yp);
-    screen_column = screen_snaptocolumn(xp);
+void screen_drawline(int x0, int y0, int x1, int y1, uint64_t color) {
+
+    bool steep = abs(y1 - y0) > abs(x1 - x0);
+
+    if(steep) {
+        x0 = x0 + y0;
+        y0 = x0 - y0;
+        x0 = x0 - y0;
+
+        x1 = x1 + y1;
+        y1 = x1 - y1;
+        x1 = x1 - y1;
+    }
+
+    if(x0 > x1) {
+        x0 = x0 + x1;
+        x1 = x0 - x1;
+        x0 = x0 - x1;
+
+        y0 = y0 + y1;
+        y1 = y0 - y1;
+        y0 = y0 - y1;
+    }
+
+    int deltaErr = abs(y1 - y0);
+    int ystep = y0 > y1 ? -1 : 1;
+    int deltax = x1 - x0;
+
+    float error = deltax >> 1;
+    int y = y0;
+
+    for(int x = x0; x <= x1; x++) {
+        if(steep)
+            screen_putpixel(y, x, color);
+        else
+            screen_putpixel(x, y, color);
+        error -= deltaErr;
+        if(error < 0) {
+            y += ystep;
+            error += deltax;
+        }
+    }
+}
+
+void screen_drawrect(int x, int y, int w, int h, uint64_t color, bool fill) {
+    screen_drawline(x, y, x + w, y, color);
+    screen_drawline(x, y + h, x + w, y + h, color);
+
+    screen_drawline(x, y, x, y + h, color);
+    screen_drawline(x + w, y, x + w, y + h, color);
+
+    if(fill) {
+        for(int x1 = 1; x1 < w; x1 ++) {
+            for(int y1 = 1; y1 < h; y1 ++) {
+                screen_putpixel(x1 + x, y1 + y, color);
+            }
+        }
+    }
 }

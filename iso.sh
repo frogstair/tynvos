@@ -6,15 +6,15 @@ mkdir -p isodir
 mkdir -p isodir/boot
 mkdir -p isodir/boot/grub
 
-cp sysroot/boot/tynvos.kernel isodir/boot/tynvos.kernel
+cp sysroot/boot/tyn.kernel isodir/boot/tyn.kernel
 cat > isodir/boot/grub/grub.cfg << EOF
-menuentry "tynvos" {
+menuentry "tyn" {
 	insmod all_video
-	multiboot /boot/tynvos.kernel
+	multiboot /boot/tyn.kernel
 }
 EOF
-grub-mkrescue -o tynvos.iso isodir
+grub-mkrescue -o tyn.iso isodir
 
-objcopy -O binary isodir/boot/tynvos.kernel kernel.bin
+objcopy -O binary isodir/boot/tyn.kernel kernel.bin
 
 . ./clean.sh

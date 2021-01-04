@@ -2,6 +2,6 @@
 set -e
 . ./iso.sh
 
-qemu-system-$(./target-triplet-to-arch.sh $HOST) -cdrom tynvos.iso -m 2G
+qemu-system-$(./target-triplet-to-arch.sh $HOST) -cdrom tyn.iso -m 2G
 
 

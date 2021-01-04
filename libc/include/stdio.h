@@ -13,7 +13,7 @@ extern "C" {
 int printf(const char* __restrict, ...);
 int putchar(int);
 int puts(const char*);
-void color(uint32_t);
+void color(uint64_t);
 
 #ifdef __cplusplus
 }

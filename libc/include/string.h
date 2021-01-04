@@ -4,6 +4,7 @@
 #include <sys/cdefs.h>
 
 #include <stddef.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,6 +19,7 @@ void bzero(void*, size_t);
 
 size_t strlen(const char*);
 void strrev(char*);
+int strcmp(const char*, const char*);
 
 #ifdef __cplusplus
 }

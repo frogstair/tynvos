@@ -8,4 +8,4 @@ done
 
 # rm -rf sysroot
 # rm -rf isodir
-# rm -rf tynvos.iso
+# rm -rf tyn.iso

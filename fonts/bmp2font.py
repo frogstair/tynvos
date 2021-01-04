@@ -3,6 +3,8 @@ import sys
 import os
 import unicodedata
 
+# args name charwidth charheight
+
 imgdata = Image.open(sys.argv[1])
 img = imgdata.load()
 cwidth = int(sys.argv[2])
@@ -13,7 +15,7 @@ outfile = open(outfilename, "w")
 
 iwidth, iheight = imgdata.size
 
-outfile.write("char tyn_ascii[128][8] = {\n")
+outfile.write("char " + fname + "[128][8] = {\n")
 
 picx, picy = 0, 0
 

@@ -40,7 +40,13 @@ string/memmove.o \
 string/memset.o \
 string/strlen.o \
 string/strrev.o \
+string/strcmp.o \
 string/bzero.o \
+math/abs.o \
+math/fabs.o \
+math/fmod.o \
+math/round.o \
+math/ceil.o \
 
 HOSTEDOBJS=\
 $(ARCH_HOSTEDOBJS) \
