@@ -1,7 +1,8 @@
 #include <string.h>
 
-void strrev(char* str) {
-    int i;
+void strrev(char *str)
+{
+	int i;
 	int j;
 	unsigned char a;
 	unsigned len = strlen((const char *)str);

@@ -30,7 +30,7 @@ for blockx in range(0, iwidth, cwidth):
             buffer.append(color[0]//255)
         buffer.reverse()
         inp = int(''.join(str(i) for i in buffer), 2)
-        v = "0x" + ''.join('%02x'%inp)
+        v = "0x" + ''.join('%02x' % inp)
         outfile.write(v + (" " if y == iheight-1 else ", "))
     char = blockx//cwidth
     outfile.write("},")

@@ -5,6 +5,6 @@
 
 void multiboot_initialize();
 
-extern uint8_t* MULTIBOOT_INFO_ADDRESS;
+extern uint8_t *MULTIBOOT_INFO_ADDRESS;
 
 #endif
